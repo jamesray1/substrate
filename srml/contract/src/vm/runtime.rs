@@ -39,7 +39,7 @@ pub(crate) struct Runtime<'a, 'data, E: Ext + 'a> {
 	input_data: &'data [u8],
 	output_data: &'data mut Vec<u8>,
 	scratch_buf: Vec<u8>,
-	schedule: &'a Schedule<E::T>,
+	schedule: &'a Schedule<<E::T as Trait>::Gas>,
 	memory: sandbox::Memory,
 	gas_meter: &'a mut GasMeter<E::T>,
 	special_trap: Option<SpecialTrap>,
@@ -49,7 +49,7 @@ impl<'a, 'data, E: Ext + 'a> Runtime<'a, 'data, E> {
 		ext: &'a mut E,
 		input_data: &'data [u8],
 		output_data: &'data mut Vec<u8>,
-		schedule: &'a Schedule<E::T>,
+		schedule: &'a Schedule<<E::T as Trait>::Gas>,
 		memory: sandbox::Memory,
 		gas_meter: &'a mut GasMeter<E::T>,
 	) -> Self {
