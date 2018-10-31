@@ -103,7 +103,7 @@ define_env!(init_env, <E: Ext>,
 	//
 	// - amount: How much gas is used.
 	gas(ctx, amount: u32) => {
-		let amount = <<<E as Ext>::T as Trait>::Gas as As<u32>>::sa(amount);
+		let amount = <<E::T as Trait>::Gas as As<u32>>::sa(amount);
 
 		match ctx.gas_meter.charge(amount) {
 			GasMeterResult::Proceed => Ok(()),
@@ -185,13 +185,13 @@ define_env!(init_env, <E: Ext>,
 		callee.resize(callee_len as usize, 0);
 		ctx.memory().get(callee_ptr, &mut callee)?;
 		let callee =
-			<<E as Ext>::T as system::Trait>::AccountId::decode(&mut &callee[..])
+			<E::T as system::Trait>::AccountId::decode(&mut &callee[..])
 				.ok_or_else(|| sandbox::HostError)?;
 
 		let mut value_buf = Vec::new();
 		value_buf.resize(value_len as usize, 0);
 		ctx.memory().get(value_ptr, &mut value_buf)?;
-		let value = BalanceOf::<<E as Ext>::T>::decode(&mut &value_buf[..])
+		let value = BalanceOf::<E::T>::decode(&mut &value_buf[..])
 			.ok_or_else(|| sandbox::HostError)?;
 
 		let mut input_data = Vec::new();
@@ -204,7 +204,7 @@ define_env!(init_env, <E: Ext>,
 		let nested_gas_limit = if gas == 0 {
 			ctx.gas_meter.gas_left()
 		} else {
-			<<<E as Ext>::T as Trait>::Gas as As<u64>>::sa(gas)
+			<<E::T as Trait>::Gas as As<u64>>::sa(gas)
 		};
 		let ext = &mut ctx.ext;
 		let scratch_buf = &mut ctx.scratch_buf;
@@ -252,7 +252,7 @@ define_env!(init_env, <E: Ext>,
 		let mut value_buf = Vec::new();
 		value_buf.resize(value_len as usize, 0);
 		ctx.memory().get(value_ptr, &mut value_buf)?;
-		let value = BalanceOf::<<E as Ext>::T>::decode(&mut &value_buf[..])
+		let value = BalanceOf::<E::T>::decode(&mut &value_buf[..])
 			.ok_or_else(|| sandbox::HostError)?;
 
 		let mut init_code = Vec::new();
@@ -269,7 +269,7 @@ define_env!(init_env, <E: Ext>,
 		let nested_gas_limit = if gas == 0 {
 			ctx.gas_meter.gas_left()
 		} else {
-			<<<E as Ext>::T as Trait>::Gas as As<u64>>::sa(gas)
+			<<E::T as Trait>::Gas as As<u64>>::sa(gas)
 		};
 		let ext = &mut ctx.ext;
 		let create_outcome = ctx.gas_meter.with_nested(nested_gas_limit, |nested_meter| {
@@ -291,7 +291,7 @@ define_env!(init_env, <E: Ext>,
 
 	// Save a data buffer as a result of the execution.
 	ext_return(ctx, data_ptr: u32, data_len: u32) => {
-		let data_len_in_gas = <<<E as Ext>::T as Trait>::Gas as As<u64>>::sa(data_len as u64);
+		let data_len_in_gas = <<E::T as Trait>::Gas as As<u64>>::sa(data_len as u64);
 		let price = (ctx.schedule.return_data_per_byte_cost)
 			.checked_mul(&data_len_in_gas)
 			.ok_or_else(|| sandbox::HostError)?;
